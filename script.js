@@ -80,6 +80,48 @@ const displayMovements = function(movements) {
 }
 
 displayMovements(account1.movements)
+
+// method that create a username and add username property to the object account 
+const createUsername = function(accs){
+  accs.forEach(function(acc){
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join("");
+  })
+}
+
+createUsername(accounts)
+// console.log(accounts);
+
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+
+// array of deposit
+const deposit = movements.filter(function(mov){
+  return mov > 0
+});
+
+// array of withdrawal
+const withdrawal = movements.filter(function(mov){
+  return mov < 0
+});
+
+// balance calculation
+// const balance = movements.reduce(function(acc, cur, i, arr){
+//   console.log(`iteration ${i}: acc ${acc} + curr : ${cur}`);
+//   return acc + cur
+// }, 0)//0 is the starting value of the accumulatore
+
+
+// function to calculate and disply balance
+const calcDisplayBlance = function(movements){
+  const balance = movements.reduce((acc, mov) => acc + mov, 0)
+  labelBalance.textContent = `${balance}$`  
+}
+
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 // LECTURES
@@ -90,7 +132,6 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
