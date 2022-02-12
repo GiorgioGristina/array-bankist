@@ -79,7 +79,36 @@ const displayMovements = function(movements) {
   });
 }
 
-displayMovements(account1.movements)
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+//  calcDispplaySummary for the bottom part of transaction
+const calcDispplaySummary = function(movements){
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((acc,mov) => acc + mov ,0)
+  labelSumIn.textContent = `${incomes}EUR`;
+  const out = movements
+    .filter(mov => mov < 0)
+    .reduce((acc,mov) => acc + mov ,0)
+  labelSumOut.textContent = `${Math.abs(out)}EUR`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(dep => dep * 0.012)
+    .filter(int=> int >= 1)    
+    .reduce((acc, int, i , arr) => acc + int);
+  
+  labelSumInterest.textContent = `${interest}EUR`;
+  
+}
+
+
+// function to calculate and disply balance
+const calcDisplayBlance = function(movements){
+  const balance = movements.reduce((acc, mov) => acc + mov, 0)
+  labelBalance.textContent = `${balance}EUR`  
+}
 
 // method that create a username and add username property to the object account 
 const createUsername = function(accs){
@@ -95,8 +124,39 @@ const createUsername = function(accs){
 createUsername(accounts)
 // console.log(accounts);
 
+// LOG IN
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+// EVENT HANDLER
+let currentAccount;
+btnLogin.addEventListener('click', function(e){
+  e.preventDefault();
+  currentAccount = accounts.find(acc => acc.username === 
+  inputLoginUsername.value);
+  // console.log(currentAccount);
+  // check if the current account exist ?(with chaning) and if the pin is correct
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // display welcome message
+    labelWelcome.textContent = `Welcome back ${currentAccount.owner.split(' ')[0]}`
+    containerApp.style.opacity = 1
+    // clear input field fields (remember assign operator work read right to left)
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur()
+    // display movements
+    displayMovements(currentAccount.movements);
+    // calculate balance
+    calcDisplayBlance(currentAccount.movements);
+    // display summary
+    calcDispplaySummary(currentAccount.movements)
+  }
+});
+
+// displayMovements(account1.movements)
+// calcDispplaySummary(movements)
+
+// calcDisplayBlance(movements)
+
+
 
 
 // array of deposit
@@ -116,11 +176,9 @@ const withdrawal = movements.filter(function(mov){
 // }, 0)//0 is the starting value of the accumulatore
 
 
-// function to calculate and disply balance
-const calcDisplayBlance = function(movements){
-  const balance = movements.reduce((acc, mov) => acc + mov, 0)
-  labelBalance.textContent = `${balance}$`  
-}
+
+
+
 
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -143,5 +201,12 @@ const currencies = new Map([
 
 const eurToUsd = 1.1;
 const movementsUsd = movements.map(mov =>  mov * eurToUsd);
+
+const TotalDepositUSD = movements
+  .filter(mov => mov > 0)
+  .map(mov => mov * eurToUsd)
+  .reduce((acc, mov)=> acc + mov, 0)
+
+// console.log(TotalDepositUSD);
 
 
