@@ -14,9 +14,9 @@ const account1 = {
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
     '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2022-02-13T17:01:17.194Z',
+    '2022-02-14T12:36:17.929Z',
+    '2022-02-15T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -72,6 +72,38 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+
+
+// 
+    // const day = `${date.getDate()}`.padStart(2, 0);
+    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    // const year = date.getFullYear();
+    // const displayDate =`${day}/${month}/${year}`;
+
+    // const calcDayPassed = (date1, date2) => 
+    // Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
+
+// function tu return day passed or regualar date
+const formatMovementDate = function(date){
+  const calcDayPassed = (date1, date2) => 
+    Math.round(Math.abs((date1 - date2) /(1000 *60 * 60 * 24)));
+
+  const dayPassed = calcDayPassed(new Date(), date)
+  console.log(dayPassed);
+
+  if (dayPassed === 0 ) return 'Today';
+  if (dayPassed === 1) return 'Yesterday';
+  if (dayPassed <= 7 ) return `${dayPassed} days ago`;
+  if (dayPassed === 0) return 'Yesterday';
+  else {
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+    const displayDate =`${day}/${month}/${year}`;
+    return `${day}/${month}/${year}`
+  }
+}
+
 // function to display transaction in the list of transaction
 const displayMovements = function(acc, sort = false) {
   containerMovements.innerHTML = '';
@@ -84,11 +116,8 @@ const displayMovements = function(acc, sort = false) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(acc.movementsDates[i]);
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
-
-    const displayDate =`${day}/${month}/${year}`;
+    const displayDate = formatMovementDate(date);
+    
     const html = `
       <div class="movements__row">
         <div class="movements__type
@@ -163,8 +192,10 @@ createUsername(accounts)
 
 // LOG IN
 let currentAccount;
-
-
+// fake login
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 1;
 
 const now = new Date();
 const day = `${now.getDay()}`.padStart(2, 0);
@@ -174,6 +205,7 @@ const hour = now.getHours();
 const min = now.getMinutes();
 labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
 //////////////////////////////////
+
 
 btnLogin.addEventListener('click', function(e){
   e.preventDefault();
@@ -276,3 +308,37 @@ btnSort.addEventListener('click', function(e){
 
 
 ///////////////////////////////////////////////
+///////////////////////////////////////////////
+// LECTURES
+// // creating
+// const now = new Date();
+// console.log(now);
+
+
+// console.log(new Date('26 december 1991'));
+
+// console.log(new Date(account1.movementsDates[0]));
+// console.log(new Date('26 december 1991'));
+// console.log(new Date(0));
+
+
+// working with date
+
+const future = new Date(2037, 3,19,15,23);
+// console.log(future.getFullYear());new Date(2037, 10,19,15,23)
+// console.log(future.getMonth()+1);
+// console.log(future.getDay());
+// console.log(future.getHours());
+// console.log(future.getMinutes());
+// console.log(future.getSeconds());
+// console.log(future.toISOString());// good when you want to store the date in a string
+// console.log(future.getTime());
+// console.log(new Date(1644849811692));
+// console.log(Date.now());
+
+// console.log(Number(future));
+
+const calcDayPassed = (date1, date2) => Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
+
+const numDay = calcDayPassed(new Date(2037, 3,19,3,23),new Date(2037, 3,9,15,23))
+// console.log(numDay);
