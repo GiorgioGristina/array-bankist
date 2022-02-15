@@ -74,8 +74,15 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 
+// 
+    // const day = `${date.getDate()}`.padStart(2, 0);
+    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    // const year = date.getFullYear();
+    // const displayDate =`${day}/${month}/${year}`;
 
-   
+    // const calcDayPassed = (date1, date2) => 
+    // Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
+
 // function tu return day passed or regualar date
 const formatMovementDate = function(date, locale){
   const calcDayPassed = (date1, date2) => 
@@ -97,6 +104,14 @@ const formatMovementDate = function(date, locale){
       .DateTimeFormat(locale)
       .format(date);
   }
+};
+
+const formatCurrency = function(value, locale, currency){
+  return new Intl.NumberFormat(locale,
+    {
+      style: 'currency',
+      currency: currency
+    }).format(value);
 }
 
 // function to display transaction in the list of transaction
@@ -113,12 +128,14 @@ const displayMovements = function(acc, sort = false) {
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatMovementDate(date, acc.locale);
     
+    const formatedMovement = formatCurrency(mov, acc.locale, acc.currency)
+
     const html = `
       <div class="movements__row">
         <div class="movements__type
         movements__type--${type}">${i +1} ${type} </div>
         <div class="movements__date">${displayDate}</div>
-        <div class="movements__value">${mov.toFixed(2)}</div>
+        <div class="movements__value">${formatedMovement}</div>
       </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -134,19 +151,19 @@ const calcDispplaySummary = function(acc){
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc,mov) => acc + mov ,0)
-  labelSumIn.textContent = `${incomes.toFixed(2)}EUR`;
+  labelSumIn.textContent = formatCurrency(incomes, acc.locale, acc.currency);
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc,mov) => acc + mov ,0)
-  labelSumOut.textContent = `${Math.abs(out.toFixed(2))}EUR`;
+  labelSumOut.textContent = formatCurrency(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
     .map(dep => dep * acc.interestRate)
     .filter(int=> int >= 1)    
     .reduce((acc, int, i , arr) => acc + int);
-  
-  labelSumInterest.textContent = `${interest.toFixed(2)}EUR`;
+
+  labelSumInterest.textContent = formatCurrency(interest, acc.locale, acc.currency);
   
 }
 
@@ -154,8 +171,8 @@ const calcDispplaySummary = function(acc){
 // function to calculate and disply balance
 const calcDisplayBalance = function(acc){
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0)
-  acc
-  labelBalance.textContent = `${acc.balance.toFixed(2)}EUR`  
+  const formatedMovement = formatCurrency(acc.balance, acc.locale, acc.currency)
+  labelBalance.textContent = `${formatedMovement}`  
 }
 
 // function that update ui interface balance, movements, summaty
@@ -221,7 +238,14 @@ btnLogin.addEventListener('click', function(e){
       .DateTimeFormat(currentAccount.locale, options)
       .format(now);
 
-   
+    // const now = new Date();
+    // const day = `${now.getDay()}`.padStart(2, 0);
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const year = now.getFullYear();
+    // const hour = `${now.getHours()}`.padStart(2, 0);
+    // const min = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    // clear input field fields (remember assign operator work read right to left)
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur()
     // call updateUI to update the balance, summary, movements
@@ -301,3 +325,4 @@ btnSort.addEventListener('click', function(e){
   
   // console.log(sorted);
 });
+
