@@ -202,12 +202,31 @@ createUsername(accounts)
 
 // EVENT HANDLER
 
-// LOG IN
-let currentAccount;
-// fake login
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 1;
+const startLogOutTimer = function(){
+  const tick = function(){
+    const min = String(Math.trunc(time /60)).padStart(2,0)
+    const sec = String(time % 60).padStart(2,0)
+    // in each call print time to user interface
+    labelTimer.textContent = `You will be logged out in ${min}:${sec}`
+    // when 0 stop timer and log out user
+    if (time === 0){
+      clearInterval(timer);
+      // set welcome message to `log in to get started`
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;      
+    } 
+    // decreese of 1 sec 
+    time--
+  }
+  // set time to 5 min
+  let time = 120;
+  // call the timer every seconds
+  tick();
+  const timer = setInterval(tick, 1000); 
+  return timer  
+};
+// variable to store who is login now
+let currentAccount, timer;
 
 
 //////////////////////////////////
@@ -220,6 +239,7 @@ btnLogin.addEventListener('click', function(e){
   // console.log(currentAccount);
   // check if the current account exist ?(with chaning) and if the pin is correct
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    
     // display welcome message
     labelWelcome.textContent = `Welcome back ${currentAccount.owner.split(' ')[0]}`
     containerApp.style.opacity = 1
@@ -248,6 +268,8 @@ btnLogin.addEventListener('click', function(e){
     // clear input field fields (remember assign operator work read right to left)
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur()
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer()
     // call updateUI to update the balance, summary, movements
     updateUI(currentAccount)
   }
@@ -277,6 +299,9 @@ btnTransfer.addEventListener('click', function(e){
       reciverUsernameAcc.movementsDates.push(new Date().toISOString());
       // appdating UI
       updateUI(currentAccount)
+      // reset timer
+      clearInterval(timer);
+      timer = startLogOutTimer()
   }
   
 });
@@ -288,10 +313,15 @@ btnLoan.addEventListener('click', function(e){
 
   if (amount > 0 &&
     currentAccount.movements.some(mov => mov > amount * 0.10 )) {
-    currentAccount.movements.push(amount);
-    // add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
-    updateUI(currentAccount)
+    setTimeout(function(){
+      currentAccount.movements.push(amount);
+      // add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
+      updateUI(currentAccount);
+       // reset timer
+       clearInterval(timer);
+       timer = startLogOutTimer()
+    },2500)
       
     
   }
@@ -326,3 +356,88 @@ btnSort.addEventListener('click', function(e){
   // console.log(sorted);
 });
 
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+// LECTURES
+// // creating
+// const now = new Date();
+// console.log(now);
+
+
+// console.log(new Date('26 december 1991'));
+
+// console.log(new Date(account1.movementsDates[0]));
+// console.log(new Date('26 december 1991'));
+// console.log(new Date(0));
+
+
+// working with date
+
+// const future = new Date(2037, 3,19,15,23);
+// console.log(future.getFullYear());new Date(2037, 10,19,15,23)
+// console.log(future.getMonth()+1);
+// console.log(future.getDay());
+// console.log(future.getHours());
+// console.log(future.getMinutes());
+// console.log(future.getSeconds());
+// console.log(future.toISOString());// good when you want to store the date in a string
+// console.log(future.getTime());
+// console.log(new Date(1644849811692));
+// console.log(Date.now());
+
+// console.log(Number(future));
+
+// const calcDayPassed = (date1, date2) => Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
+
+// const numDay = calcDayPassed(new Date(2037, 3,19,3,23),new Date(2037, 3,9,15,23))
+// console.log(numDay);
+
+// const now = new Date();
+// const options = {
+//   hour: 'numeric',
+//   minute: 'numeric',
+//   day: 'numeric',
+//   month:'long',
+//   year: 'numeric',
+//   weekday: 'long'
+// }
+
+// const locale = navigator.language;
+// console.log(locale);
+
+// labelDate.textContent= new Intl
+//   .DateTimeFormat(locale, options)
+//   .format(now);
+
+// const num = 3254534553453;
+
+// const options = {
+//   style: 'currency',
+  
+//   currency: 'EUR'
+// }
+
+// console.log( new Intl.NumberFormat('it-IT',options).format(num));
+
+
+// SET TIMEOUT to call a function one time after an a certain amount of time
+
+// const ingred =['olive', 'cacio']
+
+// const pizzaPrep = setTimeout((ing1, ing2) =>
+//  console.log(`here is your pizza with ${ing1} and ${ing2}`)
+//  , 3000
+//  ,...ingred);
+// console.log('waiting...');
+
+// if (ingred.includes('cacio')) clearTimeout(pizzaPrep);
+
+
+
+// // TIME INTERVAL to call a function several time 
+
+// setInterval(function(){
+//   const now = new Date();
+//     console.log(now);
+// },3000)
