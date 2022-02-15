@@ -74,33 +74,28 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 
 
-// 
-    // const day = `${date.getDate()}`.padStart(2, 0);
-    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    // const year = date.getFullYear();
-    // const displayDate =`${day}/${month}/${year}`;
 
-    // const calcDayPassed = (date1, date2) => 
-    // Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
-
+   
 // function tu return day passed or regualar date
-const formatMovementDate = function(date){
+const formatMovementDate = function(date, locale){
   const calcDayPassed = (date1, date2) => 
     Math.round(Math.abs((date1 - date2) /(1000 *60 * 60 * 24)));
 
   const dayPassed = calcDayPassed(new Date(), date)
-  console.log(dayPassed);
-
+  
   if (dayPassed === 0 ) return 'Today';
   if (dayPassed === 1) return 'Yesterday';
   if (dayPassed <= 7 ) return `${dayPassed} days ago`;
   if (dayPassed === 0) return 'Yesterday';
   else {
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
-    const displayDate =`${day}/${month}/${year}`;
-    return `${day}/${month}/${year}`
+    // const day = `${date.getDate()}`.padStart(2, 0);
+    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    // const year = date.getFullYear();
+    // const displayDate =`${day}/${month}/${year}`;
+    // return `${day}/${month}/${year}`
+    return new Intl
+      .DateTimeFormat(locale)
+      .format(date);
   }
 }
 
@@ -116,7 +111,7 @@ const displayMovements = function(acc, sort = false) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = formatMovementDate(date);
+    const displayDate = formatMovementDate(date, acc.locale);
     
     const html = `
       <div class="movements__row">
@@ -197,13 +192,7 @@ currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 1;
 
-const now = new Date();
-const day = `${now.getDay()}`.padStart(2, 0);
-const month = `${now.getMonth() + 1}`.padStart(2, 0);
-const year = now.getFullYear();
-const hour = now.getHours();
-const min = now.getMinutes();
-labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+
 //////////////////////////////////
 
 
@@ -219,13 +208,20 @@ btnLogin.addEventListener('click', function(e){
     containerApp.style.opacity = 1
     // to display date and time on balance
     const now = new Date();
-    const day = `${now.getDay()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const min = `${now.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
-    // clear input field fields (remember assign operator work read right to left)
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month:'long',
+      year: 'numeric'
+      // weekday: 'long'
+    };
+    // const locale = navigator.language;
+    labelDate.textContent= new Intl
+      .DateTimeFormat(currentAccount.locale, options)
+      .format(now);
+
+   
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur()
     // call updateUI to update the balance, summary, movements
@@ -303,42 +299,5 @@ btnSort.addEventListener('click', function(e){
   displayMovements(currentAccount, !sorted);
   sorted = !sorted;
   
-  console.log(sorted);
+  // console.log(sorted);
 });
-
-
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-// LECTURES
-// // creating
-// const now = new Date();
-// console.log(now);
-
-
-// console.log(new Date('26 december 1991'));
-
-// console.log(new Date(account1.movementsDates[0]));
-// console.log(new Date('26 december 1991'));
-// console.log(new Date(0));
-
-
-// working with date
-
-const future = new Date(2037, 3,19,15,23);
-// console.log(future.getFullYear());new Date(2037, 10,19,15,23)
-// console.log(future.getMonth()+1);
-// console.log(future.getDay());
-// console.log(future.getHours());
-// console.log(future.getMinutes());
-// console.log(future.getSeconds());
-// console.log(future.toISOString());// good when you want to store the date in a string
-// console.log(future.getTime());
-// console.log(new Date(1644849811692));
-// console.log(Date.now());
-
-// console.log(Number(future));
-
-const calcDayPassed = (date1, date2) => Math.abs((date1 - date2) /(1000 *60 * 60 * 24));
-
-const numDay = calcDayPassed(new Date(2037, 3,19,3,23),new Date(2037, 3,9,15,23))
-// console.log(numDay);
