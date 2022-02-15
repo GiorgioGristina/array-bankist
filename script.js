@@ -73,18 +73,27 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // function to display transaction in the list of transaction
-const displayMovements = function(movements, sort = false) {
+const displayMovements = function(acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a,b) =>
-   a -b ) : movements;
+  const movs = sort 
+    ? acc.movements.slice().sort((a,b) =>a -b ) 
+    : acc.movements;
   // loop througout the movement array
   movs.forEach(function(mov, i){
     const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(acc.movementsDates[i]);
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+
+    const displayDate =`${day}/${month}/${year}`;
     const html = `
       <div class="movements__row">
         <div class="movements__type
         movements__type--${type}">${i +1} ${type} </div>
+        <div class="movements__date">${displayDate}</div>
         <div class="movements__value">${mov.toFixed(2)}</div>
       </div>
     `;
@@ -128,7 +137,7 @@ const calcDisplayBalance = function(acc){
 // function that update ui interface balance, movements, summaty
 const updateUI = function(acc){
   // display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
   // calculate balance
   calcDisplayBalance(acc);
   // display summary
@@ -155,6 +164,17 @@ createUsername(accounts)
 // LOG IN
 let currentAccount;
 
+
+
+const now = new Date();
+const day = `${now.getDay()}`.padStart(2, 0);
+const month = `${now.getMonth() + 1}`.padStart(2, 0);
+const year = now.getFullYear();
+const hour = now.getHours();
+const min = now.getMinutes();
+labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+//////////////////////////////////
+
 btnLogin.addEventListener('click', function(e){
   e.preventDefault();
   currentAccount = accounts.find(acc => acc.username === 
@@ -165,6 +185,14 @@ btnLogin.addEventListener('click', function(e){
     // display welcome message
     labelWelcome.textContent = `Welcome back ${currentAccount.owner.split(' ')[0]}`
     containerApp.style.opacity = 1
+    // to display date and time on balance
+    const now = new Date();
+    const day = `${now.getDay()}`.padStart(2, 0);
+    const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const hour = `${now.getHours()}`.padStart(2, 0);
+    const min = `${now.getMinutes()}`.padStart(2, 0);
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
     // clear input field fields (remember assign operator work read right to left)
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur()
@@ -189,9 +217,13 @@ btnTransfer.addEventListener('click', function(e){
      currentAccount.balance >= transferAmount &&
      reciverUsernameAcc.username !== currentAccount.username
      ) {
-       console.log('transfer valid');
+      // doing transfer
       currentAccount.movements.push(-transferAmount)
       reciverUsernameAcc.movements.push(transferAmount)
+      // add transfer date
+      currentAccount.movementsDates.push(new Date().toISOString());
+      reciverUsernameAcc.movementsDates.push(new Date().toISOString());
+      // appdating UI
       updateUI(currentAccount)
   }
   
@@ -205,8 +237,10 @@ btnLoan.addEventListener('click', function(e){
   if (amount > 0 &&
     currentAccount.movements.some(mov => mov > amount * 0.10 )) {
     currentAccount.movements.push(amount);
+    // add loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
     updateUI(currentAccount)
-      console.log('you allowed');
+      
     
   }
   inputLoanAmount.value = ''
@@ -234,7 +268,7 @@ btnClose.addEventListener('click', function(e){
 let sorted = false;
 btnSort.addEventListener('click', function(e){
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
   
   console.log(sorted);
@@ -242,7 +276,3 @@ btnSort.addEventListener('click', function(e){
 
 
 ///////////////////////////////////////////////
-///////////////////////////////////////////////
-// LECTURES
-
-
